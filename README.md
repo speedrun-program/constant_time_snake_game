@@ -8,6 +8,6 @@ The partitioned grid is needed to randomly select bug spaces in O(1) time.
 It's also used to find existing bug locations in O(1) time.
 
 controls:
-wasd or arrow keys control the snake
-z and x change bug hints
-p pauses the game
+- wasd or arrow keys control the snake
+- z and x change bug hints
+- p pauses the game
