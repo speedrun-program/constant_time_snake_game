@@ -20,9 +20,9 @@ from typing import Dict, Tuple, Union
 
 
 # controls:
-# wasd or arrow keys control the snake
-# z and x change bug hints
-# p pauses the game
+# - wasd or arrow keys control the snake
+# - z and x change bug hints
+# - p pauses the game
 
 
 # values of grid spaces
