@@ -188,14 +188,15 @@ class BitPackingArray:
         if isinstance(self.byte_array, memoryview):
             raise ValueError("can only reshape entire BitPackingArray")
         
-        self.bits_per_index = bits_per_index
-        self.dimensions = tuple(map(int, dimensions)) if not isinstance(dimensions, int) else (dimensions,)
+        dimensions = tuple(map(int, dimensions)) if not isinstance(dimensions, int) else (dimensions,)
         
-        if len(self.dimensions) == 1 and self.dimensions[0] == 0:
+        if len(dimensions) == 1 and dimensions[0] == 0:
             self.byte_array = bytearray(0)
+            self.bits_per_index = bits_per_index
+            self.dimensions = dimensions
             return
         
-        if any(d <= 0 for d in self.dimensions):
+        if any(d <= 0 for d in dimensions):
             raise ValueError("all dimensions must be greater than 0")
         elif bits_per_index <= 0:
             raise ValueError("bits_per_index must be greater than 0")
@@ -203,11 +204,13 @@ class BitPackingArray:
             raise ValueError("no dimensions given")
         
         total_bits = bits_per_index
-        for d in self.dimensions:
+        for d in dimensions:
             total_bits *= d
         total_bytes = (total_bits // 8) + (total_bits % 8 != 0)
         
-        self.byte_array.__init__(total_bytes)
+        self.byte_array.__init__(total_bytes) # attempt this first in case memory can't be allocated
+        self.bits_per_index = bits_per_index
+        self.dimensions = dimensions
 
 
 if not IS_AT_LEAST_3DOT11:
