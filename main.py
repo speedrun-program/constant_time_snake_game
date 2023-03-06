@@ -97,9 +97,7 @@ class GridHelper:
         number_of_end_bits = self.bits_per_index - self.start_bit - self.bits_to_read
         bits_at_end = self.grid[pos] & (((1 << number_of_end_bits) - 1) << (self.start_bit + self.bits_to_read))
         bits_at_start = self.grid[pos] & ((1 << self.start_bit) - 1)
-        new_value = bits_at_end + (new_value << self.start_bit) + bits_at_start
-        
-        self.grid[pos] = new_value
+        self.grid[pos] = bits_at_end + (new_value << self.start_bit) + bits_at_start
 
 
 class Game:
