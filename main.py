@@ -566,7 +566,7 @@ def config(gui: GUI) -> bool:
                     new_settings[active_box.text] = active_box.box_text
 
 
-def wait_for_input(gui: GUI, waiting_for_unpause: bool = False) -> Tuple[int, int]:
+def wait_for_input(gui: GUI, waiting_for_unpause: bool = False) -> Tuple[bool, bool]:
     while True:
         pygame.time.wait(16)
         pygame.display.update()
@@ -581,7 +581,7 @@ def wait_for_input(gui: GUI, waiting_for_unpause: bool = False) -> Tuple[int, in
                 return event.type != pygame.MOUSEBUTTONUP, event.type != pygame.QUIT
 
 
-def play_game(game: Game, gui: GUI) -> Tuple[int, int]:
+def play_game(game: Game, gui: GUI) -> Tuple[bool, bool]:
     gui.set_messages("")
     ticks_since_last_movement = 0
     direction = None
