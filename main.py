@@ -9,19 +9,20 @@ from random import randrange
 from collections.abc import Iterable
 from typing import Dict, Tuple, Union
 
-# Memory efficient snake game with O(1) algorithm for snake movement and bug placement.
-# Three grids are used:
+# memory efficient snake game with O(1) algorithm for snake movement and bug placement.
+# three grids are used:
 # - a grid representing the game grid
 # - a grid partitioned into empty coords, future bug coords, current bug coords, and snake spaces
 # - a grid which maps game grid coords to partitioned grid coords/indexes
 
-# The partitioned grid is needed to randomly select bug spaces in O(1) time.
-# It's also used to find existing bug locations in O(1) time.
+# the partitioned grid is needed to randomly select bug spaces in O(1) time.
+# it's also used to find existing bug locations in O(1) time.
+
 
 # controls:
-# - wasd or arrow keys control the snake
-# - z and x change bug hints
-# - p pauses the game
+# wasd or arrow keys control the snake
+# z and x change bug hints
+# p pauses the game
 
 
 # values of grid spaces
@@ -64,30 +65,43 @@ class GridHelper:
     
     def __getitem__(self, pos: Union[Iterable[int, int], int]) -> int:
         if not isinstance(pos, int):
+            if not (0 <= pos[0] < self.height and 0 <= pos[1] < 1 << self.width):
+                raise IndexError(f"coord {pos} out of range")
             pos = (pos[0] * self.width) + pos[1]
+        elif not 0 <= pos < self.width * self.height:
+            raise IndexError(f"index {pos} out of range")
         
         value = (self.grid[pos] >> self.start_bit) & ((1 << self.bits_to_read) - 1)
         if not self.is_game_grid:
             if value == 0:
                 return pos
             return value - 1
+        
+        assert 0 <= value < 1 << self.bits_to_read, f"return value {value} out of range(0, {1 << self.bits_to_read})"
         return value
     
     
     def __setitem__(self, pos: Union[Iterable[int, int], int], new_value: int) -> None:
         if not isinstance(pos, int):
+            if not (0 <= pos[0] < self.height and 0 <= pos[1] < 1 << self.width):
+                raise IndexError(f"coord {pos} out of range")
             pos = (pos[0] * self.width) + pos[1]
+        elif not 0 <= pos < self.width * self.height:
+            raise IndexError(f"index {pos} out of range")
+        
         if not isinstance(new_value, int):
             new_value = (new_value[0] * self.width) + new_value[1]
         
         new_value += not self.is_game_grid
-        if not 0 <= new_value <= ((1 << self.bits_to_read) - 1):
-            raise ValueError(f"value must be in range(0, {((1 << self.bits_to_read) - 1)}), value was {new_value}")
+        if not 0 <= new_value < 1 << self.bits_to_read:
+            raise ValueError(f"value must be in range(0, {1 << self.bits_to_read}), value was {new_value}")
         
         number_of_end_bits = self.bits_per_index - self.start_bit - self.bits_to_read
         bits_at_end = self.grid[pos] & (((1 << number_of_end_bits) - 1) << (self.start_bit + self.bits_to_read))
         bits_at_start = self.grid[pos] & ((1 << self.start_bit) - 1)
-        self.grid[pos] = bits_at_end + (new_value << self.start_bit) + bits_at_start
+        new_value = bits_at_end + (new_value << self.start_bit) + bits_at_start
+        
+        self.grid[pos] = new_value
 
 
 class Game:
