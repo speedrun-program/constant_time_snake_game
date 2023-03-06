@@ -73,9 +73,7 @@ class GridHelper:
         
         value = (self.grid[pos] >> self.start_bit) & ((1 << self.bits_to_read) - 1)
         if not self.is_game_grid:
-            if value == 0:
-                return pos
-            return value - 1
+            value = pos if value == 0 else value - 1
         
         assert 0 <= value < 1 << self.bits_to_read, f"return value {value} out of range(0, {1 << self.bits_to_read})"
         return value
