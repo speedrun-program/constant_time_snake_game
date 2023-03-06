@@ -99,6 +99,7 @@ class BitPackingArray:
         if bits_left_to_read > 0:
             value += (self.byte_array[which_byte] & ((1 << bits_left_to_read) - 1)) << current_bit_position
         
+        assert 0 <= value < 1 << self.bits_per_index, f"return value {value} out of range(0, {1 << self.bits_per_index})"
         return value
     
     
@@ -160,10 +161,10 @@ class BitPackingArray:
     def __setitem__(self, idx: int, new_value: int) -> None:
         if len(self.dimensions) > 1:
             raise ValueError("__setitem__ only supported on 1-dimensional arrays, len(self.dimensions) must be 1")
-        if not 0 <= idx if idx >= 0 else self.dimensions[0] + idx < self.dimensions[0]:
+        if not 0 <= (idx if idx >= 0 else self.dimensions[0] + idx) < self.dimensions[0]:
             raise IndexError(f"attempted to set index {idx} of dimension {self.current_dimension}, which is length {self.dimensions[0]}")
-        if not 0 <= new_value <= ((1 << self.bits_per_index) - 1):
-            raise ValueError(f"value must be in range(0, {((1 << self.bits_per_index) - 1)}), value was {new_value}")
+        if not 0 <= new_value < 1 << self.bits_per_index:
+            raise ValueError(f"value must be in range(0, {1 << self.bits_per_index}), value was {new_value}")
         
         self.set(idx, new_value)
     
@@ -171,8 +172,8 @@ class BitPackingArray:
     def append(self, new_value: int) -> None:
         if len(self.dimensions) > 1 or self.current_dimension > 0:
             raise ValueError("appending only supported on 1-dimensional arrays")
-        if not 0 <= new_value <= ((1 << self.bits_per_index) - 1):
-            raise ValueError(f"value must be in range(0, {((1 << self.bits_per_index) - 1)}), value was {new_value}")
+        if not 0 <= new_value < 1 << self.bits_per_index:
+            raise ValueError(f"value must be in range(0, {1 << self.bits_per_index}), value was {new_value}")
         
         # allocating more space if necessary
         total_bits = self.bits_per_index * (self.dimensions[0] + 1)
