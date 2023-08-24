@@ -192,7 +192,7 @@ class BitPackingArray:
         dimensions = tuple(map(int, dimensions)) if not isinstance(dimensions, int) else (dimensions,)
         
         if len(dimensions) == 1 and dimensions[0] == 0:
-            self.byte_array = bytearray(0)
+            self.byte_array.__init__(0)
             self.bits_per_index = bits_per_index
             self.dimensions = dimensions
             return
