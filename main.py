@@ -79,7 +79,7 @@ class GridHelper:
         return value
     
     
-    def __setitem__(self, pos: Union[Iterable[int, int], int], new_value: int) -> None:
+    def __setitem__(self, pos: Union[Iterable[int, int], int], new_value: Union[Iterable[int, int], int]) -> None:
         if not isinstance(pos, int):
             if not (0 <= pos[0] < self.height and 0 <= pos[1] < 1 << self.width):
                 raise IndexError(f"coord {pos} out of range")
